@@ -29,8 +29,63 @@ To learn more about Next.js, take a look at the following resources:
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
+## 🚀 Deployment
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Quick Deploy to Vercel (Recommended)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. **Push your code to GitHub**
+   ```bash
+   git push origin main
+   ```
+
+2. **Go to [vercel.com](https://vercel.com)**
+   - Sign up/Login with GitHub
+   - Click "Add New Project"
+   - Import your repository
+
+3. **Add Environment Variables:**
+   - `NEXT_PUBLIC_SUPABASE_URL` - Your Supabase project URL
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Your Supabase anon key
+
+4. **Deploy!** Vercel will automatically build and deploy your app.
+
+### Detailed Deployment Guide
+
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for complete deployment instructions, troubleshooting, and alternative platforms.
+
+### Environment Variables Required
+
+Create a `.env.local` file (or set in Vercel dashboard):
+
+```bash
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+---
+
+## 📱 PWA Features
+
+This app is a Progressive Web App (PWA) with:
+- ✅ Offline support
+- ✅ Installable on mobile/desktop
+- ✅ Push notifications (ready for backend)
+- ✅ App shortcuts (long-press on icon)
+- ✅ Service worker caching
+
+---
+
+## 🛠️ Tech Stack
+
+- **Framework:** Next.js 16
+- **Styling:** Tailwind CSS
+- **Database:** Supabase
+- **PWA:** next-pwa
+- **Icons:** Lucide React
+- **Language:** Arabic (RTL)
+
+---
+
+## 📄 License
+
+This project is private.
