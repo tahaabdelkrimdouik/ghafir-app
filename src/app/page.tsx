@@ -4,7 +4,7 @@
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
-import CreativeHome from "@/components/creativeHome";
+import CreativeHome from "../components/creativeHome";
 import BottomNav, { TabType } from "@/components/bottomNav";
 import PrayerTimes from "@/components/prayer-times";
 import DhikrCounter from "@/components/dhikr-counter";

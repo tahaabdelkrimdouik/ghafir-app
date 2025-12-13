@@ -4,7 +4,7 @@
 import { useState, useEffect } from "react";
 import { formatCountdown } from "@/helpers/utils";
 import { arabicTranslations } from "@/helpers/translation";
-import { PrayerTime } from "@/hooks/usePrayerData"; // Import type from hook
+import { PrayerTime } from "@/helpers/usePrayerData"; // Import type from hook
 
 export default function CreativeHome({ prayerTimes }: { prayerTimes: PrayerTime[] }) {
   const [timeOfDay, setTimeOfDay] = useState(arabicTranslations.evening);
