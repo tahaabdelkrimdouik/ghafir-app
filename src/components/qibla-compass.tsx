@@ -94,8 +94,10 @@ export default function QiblaCompass() {
       if (event.alpha !== null) {
         // Alpha gives the compass heading (0-360)
         // Adjust for iOS/Android differences
-        let heading = event.webkitCompassHeading || event.alpha
-        if (event.webkitCompassHeading === undefined) {
+        // webkitCompassHeading is a non-standard iOS property
+        const eventWithWebkit = event as DeviceOrientationEvent & { webkitCompassHeading?: number }
+        let heading = eventWithWebkit.webkitCompassHeading ?? event.alpha
+        if (eventWithWebkit.webkitCompassHeading === undefined) {
           heading = 360 - heading
         }
         setDeviceHeading(heading)
