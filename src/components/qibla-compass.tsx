@@ -191,13 +191,45 @@ export default function QiblaCompass() {
       ) : (
         <>
           {needsPermissionPrompt && !permissionGranted && (
-            <Card>
+            <Card className="border-amber-200 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-900/10">
               <CardContent className="pt-6 space-y-4">
-                <p className="text-center text-sm text-muted-foreground">
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <CompassIcon className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                  <p className="text-center text-sm font-semibold text-foreground font-arabic">
+                    معايرة البوصلة
+                  </p>
+                </div>
+                <p className="text-center text-sm text-muted-foreground font-arabic">
                   يتطلب iOS إذناً لاستخدام مستشعر الاتجاه. اضغط على الزر أدناه لتفعيل البوصلة.
                 </p>
-                <Button className="w-full" onClick={handlePermissionRequest}>
+                <Button 
+                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-arabic" 
+                  onClick={handlePermissionRequest}
+                >
                   تفعيل البوصلة
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+
+          {permissionGranted && calibrationHint && (
+            <Card className="border-amber-200 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-900/10">
+              <CardContent className="pt-6 space-y-3">
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <CompassIcon className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                  <p className="text-sm font-semibold text-amber-700 dark:text-amber-300 font-arabic">
+                    معايرة البوصلة
+                  </p>
+                </div>
+                <p className="text-sm text-muted-foreground text-center font-arabic">
+                  حرّك هاتفك على شكل رقم ٨ لتحسين دقة البوصلة.
+                </p>
+                <Button 
+                  variant="outline" 
+                  className="w-full border-amber-300 dark:border-amber-700 text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/20 font-arabic"
+                  onClick={handlePermissionRequest}
+                >
+                  إعادة المعايرة
                 </Button>
               </CardContent>
             </Card>
@@ -267,13 +299,7 @@ export default function QiblaCompass() {
 
           <Card className="bg-muted/50">
             <CardContent className="pt-6 space-y-3">
-              {calibrationHint && (
-                <div className="flex items-center justify-center gap-2 text-amber-600 dark:text-amber-400 text-sm font-semibold">
-                  <CompassIcon className="w-4 h-4" />
-                  <span>حرّك هاتفك على شكل رقم ٨ لتحسين دقة البوصلة.</span>
-                </div>
-              )}
-              <p className="text-sm text-muted-foreground text-center leading-relaxed">
+              <p className="text-sm text-muted-foreground text-center leading-relaxed font-arabic">
                 ضع هاتفك بشكل مسطح ودوّره حتى يشير السهم إلى الأعلى لتحصل على اتجاه القبلة. تأكد من
                 تفعيل خدمات الموقع والمعايرة عند الحاجة.
               </p>

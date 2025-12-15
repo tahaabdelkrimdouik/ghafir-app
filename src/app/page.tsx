@@ -2,24 +2,25 @@
 "use client";
 
 import { useState, useEffect, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import CreativeHome from "@/components/creativeHome";
 import BottomNav, { TabType } from "@/components/bottomNav";
-import PrayerTimes from "@/components/prayer-times";
-import DhikrCounter from "@/components/dhikr-counter";
-import QiblaCompass from "@/components/qibla-compass";
 import RandomAyahCard from "@/components/RandomAyahCard";
 import { NotificationSetup } from "@/components/NotificationSetup";
 import { usePrayerData } from "@/helpers/usePrayerData"; // The hook we created
+import OnboardingModal from "@/components/OnboardingModal";
+import { useNotificationScheduler } from "@/hooks/useNotificationScheduler";
 
 function PageContent() {
   const searchParams = useSearchParams();
+  const { onboardingComplete } = useNotificationScheduler();
   
   // 1. UI State
   const [activeTab, setActiveTab] = useState<TabType>("home");
   
-  // Handle query parameters from PWA shortcuts
+  // Handle query parameters from PWA shortcuts — redirect to the dedicated routes
+  const router = useRouter();
   useEffect(() => {
     const type = searchParams.get("type");
     const qibla = searchParams.get("qibla");
@@ -27,26 +28,23 @@ function PageContent() {
     const duaa = searchParams.get("duaa");
 
     if (qibla === "true") {
-      setActiveTab("qibla");
+      router.push("/qibla");
     } else if (type === "morning") {
-      setActiveTab("dhikr");
-      // You can add additional logic here to filter to morning dhikr
-      // For example, pass a prop to DhikrCounter or use state
+      router.push("/dhikr");
     } else if (mode === "single") {
-      setActiveTab("dhikr");
-      // You can add logic to show single dhikr mode
+      router.push("/dhikr");
     } else if (duaa === "emergency") {
-      // For now, just navigate to home or dhikr
-      // You can create a dedicated emergency duaa component later
-      setActiveTab("dhikr");
+      router.push("/dhikr");
     }
-  }, [searchParams]);
+  }, [searchParams, router]);
 
   // 2. Data Logic (Abstracted away!)
   const { prayerTimes } = usePrayerData();
 
   return (
     <div className="min-h-[100dvh] flex flex-col bg-background dark:bg-black transition-colors duration-500">
+      {/* Onboarding Modal */}
+      {!onboardingComplete && <OnboardingModal />}
       
       {/* Top Bar */}
       <Navbar />
@@ -66,23 +64,7 @@ function PageContent() {
           </div>
         )}
 
-        {activeTab === "prayer" && (
-          <div className="animate-in slide-in-from-bottom-4 duration-500">
-            <PrayerTimes />
-          </div>
-        )}
-
-        {activeTab === "dhikr" && (
-          <div className="p-4 text-center pt-8 animate-in zoom-in-95 duration-500">
-            <DhikrCounter />
-          </div>
-        )}
-
-        {activeTab === "qibla" && (
-          <div className="p-4 text-center pt-8 animate-in zoom-in-95 duration-500">
-            <QiblaCompass />
-          </div>
-        )}
+        {/* Dedicated routes now handle prayer / dhikr / qibla pages. Home keeps CreativeHome and summary cards. */}
       </main>
 
       {/* Bottom Navigation */}
