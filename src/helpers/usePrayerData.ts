@@ -1,4 +1,3 @@
-// hooks/usePrayerData.ts
 import { useState, useEffect } from 'react';
 
 export type PrayerTime = {

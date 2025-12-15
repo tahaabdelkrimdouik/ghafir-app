@@ -17,12 +17,17 @@ const MoonIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
 const Navbar: React.FC = () => {
   const { theme, toggleTheme } = useTheme();
   const [scrolled, setScrolled] = useState<boolean>(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   // Scroll effect logic
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    setIsMounted(true);
   }, []);
 
   return (
@@ -37,12 +42,18 @@ const Navbar: React.FC = () => {
         
         {/* 1. Logo Section */}
         <div className="flex items-center gap-3">
-          <img
-            src="/Logos/logo-png.png"
-            alt="Logo"
-            className="h-8 w-auto drop-shadow-sm transition-transform hover:scale-110 cursor-pointer"
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} // Go to top on click
-          />
+          <div className="h-8 w-24 flex items-center">
+            {isMounted ? (
+              <img
+                src={theme === 'dark' ? "/Logos/logo-png-white.png" : "/Logos/logo-png-purple.png"}
+                alt="Ghafir Logo"
+                className="h-8 w-auto drop-shadow-sm transition-transform hover:scale-110 cursor-pointer"
+                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              />
+            ) : (
+              <div className="h-8 w-full rounded-full bg-gradient-to-r from-purple-200 to-purple-100 dark:from-purple-800 dark:to-purple-700 animate-pulse" aria-hidden="true" />
+            )}
+          </div>
         </div>
 
         {/* 2. Control Cluster (Theme) */}

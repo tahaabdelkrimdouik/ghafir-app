@@ -46,7 +46,7 @@ function PageContent() {
   const { prayerTimes } = usePrayerData();
 
   return (
-    <div className="min-h-screen flex flex-col bg-background dark:bg-black transition-colors duration-500">
+    <div className="min-h-[100dvh] flex flex-col bg-background dark:bg-black transition-colors duration-500">
       
       {/* Top Bar */}
       <Navbar />
@@ -96,7 +96,7 @@ function PageContent() {
 
 export default function Page() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">جاري التحميل...</div>}>
+    <Suspense fallback={<div className="min-h-[100dvh] flex items-center justify-center">جاري التحميل...</div>}>
       <PageContent />
     </Suspense>
   );

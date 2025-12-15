@@ -1,18 +1,23 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import { Card, CardContent } from "@/components/ui/card"
-import { MapPin, Navigation, Loader2 } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { MapPin, Navigation, Loader2, Compass as CompassIcon } from "lucide-react"
 
 export default function QiblaCompass() {
   const [qiblaDirection, setQiblaDirection] = useState<number | null>(null)
   const [deviceHeading, setDeviceHeading] = useState<number>(0)
+  const headingRef = useRef<number | null>(null)
   const [location, setLocation] = useState<string>("Getting location...")
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string>("")
   const [permissionGranted, setPermissionGranted] = useState(false)
+  const [needsPermissionPrompt, setNeedsPermissionPrompt] = useState(false)
+  const [orientationError, setOrientationError] = useState<string | null>(null)
+  const [accuracy, setAccuracy] = useState<number | null>(null)
+  const [calibrationHint, setCalibrationHint] = useState(false)
 
-  // Calculate Qibla direction from user's location to Kaaba
   const calculateQiblaDirection = (lat: number, lng: number) => {
     const kaabaLat = 21.4225
     const kaabaLng = 39.826181
@@ -31,32 +36,29 @@ export default function QiblaCompass() {
   }
 
   useEffect(() => {
-    // Get user's location
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         async (position) => {
           const { latitude, longitude } = position.coords
 
           try {
-            // Fetch location name
             const locationRes = await fetch(
               `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`,
             )
             const locationData = await locationRes.json()
             setLocation(`${locationData.city || locationData.locality}, ${locationData.countryName}`)
 
-            // Calculate Qibla direction
             const qibla = calculateQiblaDirection(latitude, longitude)
             setQiblaDirection(qibla)
             setLoading(false)
-          } catch (error) {
-            console.error("Error fetching location:", error)
+          } catch (fetchError) {
+            console.error("Error fetching location:", fetchError)
             setError("Unable to fetch location")
             setLoading(false)
           }
         },
-        (error) => {
-          console.error("Geolocation error:", error)
+        (geoError) => {
+          console.error("Geolocation error:", geoError)
           setError("Location access denied. Please enable location services.")
           setLoading(false)
         },
@@ -68,58 +70,102 @@ export default function QiblaCompass() {
   }, [])
 
   useEffect(() => {
-    // Request device orientation permission (iOS 13+)
-    const requestPermission = async () => {
-      if (
-        typeof DeviceOrientationEvent !== "undefined" &&
-        typeof (DeviceOrientationEvent as any).requestPermission === "function"
-      ) {
-        try {
-          const permission = await (DeviceOrientationEvent as any).requestPermission()
-          setPermissionGranted(permission === "granted")
-        } catch (error) {
-          console.error("Error requesting orientation permission:", error)
-        }
-      } else {
-        setPermissionGranted(true)
-      }
+    if (typeof window === "undefined") return
+    if (
+      typeof DeviceOrientationEvent !== "undefined" &&
+      typeof (DeviceOrientationEvent as any).requestPermission === "function"
+    ) {
+      setNeedsPermissionPrompt(true)
+    } else {
+      setPermissionGranted(true)
     }
+  }, [])
 
-    requestPermission()
+  const handlePermissionRequest = async () => {
+    if (
+      typeof DeviceOrientationEvent !== "undefined" &&
+      typeof (DeviceOrientationEvent as any).requestPermission === "function"
+    ) {
+      try {
+        const permission = await (DeviceOrientationEvent as any).requestPermission()
+        const granted = permission === "granted"
+        setPermissionGranted(granted)
+        setNeedsPermissionPrompt(!granted)
+        if (!granted) {
+          setOrientationError("يتطلب عرض البوصلة منح إذن مستشعر الاتجاه.")
+        } else {
+          setOrientationError(null)
+        }
+      } catch (requestError) {
+        console.error("Error requesting orientation permission:", requestError)
+        setOrientationError("حدث خطأ أثناء طلب الإذن. يرجى المحاولة مرة أخرى.")
+      }
+    } else {
+      setPermissionGranted(true)
+    }
+  }
+
+  const smoothHeading = useCallback((nextHeading: number) => {
+    if (headingRef.current === null) {
+      headingRef.current = nextHeading
+      setDeviceHeading(nextHeading)
+      return
+    }
+    const previous = headingRef.current
+    const delta = ((nextHeading - previous + 540) % 360) - 180
+    const eased = (previous + delta * 0.2 + 360) % 360
+    headingRef.current = eased
+    setDeviceHeading(eased)
   }, [])
 
   useEffect(() => {
-    // Handle device orientation
-    const handleOrientation = (event: DeviceOrientationEvent) => {
-      if (event.alpha !== null) {
-        // Alpha gives the compass heading (0-360)
-        // Adjust for iOS/Android differences
-        // webkitCompassHeading is a non-standard iOS property
-        const eventWithWebkit = event as DeviceOrientationEvent & { webkitCompassHeading?: number }
-        let heading = eventWithWebkit.webkitCompassHeading ?? event.alpha
-        if (eventWithWebkit.webkitCompassHeading === undefined) {
-          heading = 360 - heading
+    if (!permissionGranted) return
+    if (typeof window === "undefined" || typeof DeviceOrientationEvent === "undefined") {
+      setOrientationError("جهازك لا يدعم مستشعر البوصلة.")
+      return
+    }
+
+    setOrientationError(null)
+
+    const handleOrientation = (event: DeviceOrientationEvent & { webkitCompassHeading?: number; webkitCompassAccuracy?: number }) => {
+      let heading: number | null = null
+      let reportedAccuracy = typeof event.webkitCompassAccuracy === "number" ? event.webkitCompassAccuracy : null
+
+      if (typeof event.webkitCompassHeading === "number" && !Number.isNaN(event.webkitCompassHeading)) {
+        heading = event.webkitCompassHeading
+      } else if (typeof event.alpha === "number") {
+        const alphaHeading = event.absolute ? event.alpha : 360 - event.alpha
+        heading = (360 - alphaHeading + 360) % 360
+        if (!reportedAccuracy) {
+          reportedAccuracy = event.absolute ? 15 : 45
         }
-        setDeviceHeading(heading)
+      }
+
+      if (heading === null) return
+
+      smoothHeading(heading)
+      if (reportedAccuracy !== null) {
+        setAccuracy(reportedAccuracy)
+        setCalibrationHint(reportedAccuracy > 15)
+      } else {
+        setCalibrationHint(event.absolute === false)
       }
     }
 
-    if (permissionGranted) {
-      window.addEventListener("deviceorientationabsolute" as any, handleOrientation, true)
-      window.addEventListener("deviceorientation", handleOrientation, true)
-    }
+    window.addEventListener("deviceorientationabsolute" as any, handleOrientation, true)
+    window.addEventListener("deviceorientation", handleOrientation, true)
 
     return () => {
       window.removeEventListener("deviceorientationabsolute" as any, handleOrientation, true)
       window.removeEventListener("deviceorientation", handleOrientation, true)
     }
-  }, [permissionGranted])
+  }, [permissionGranted, smoothHeading])
 
-  const compassRotation = qiblaDirection !== null ? qiblaDirection - deviceHeading : 0
+  const compassRotation =
+    qiblaDirection !== null ? (qiblaDirection - deviceHeading + 360) % 360 : 0
 
   return (
-    <div className="p-6 space-y-6 ">
-      {/* Location Info */}
+    <div className="p-6 space-y-6">
       <Card>
         <CardContent className="pt-6">
           <div className="flex items-center justify-center gap-2 text-sm">
@@ -144,15 +190,32 @@ export default function QiblaCompass() {
         </Card>
       ) : (
         <>
-          {/* Compass Display */}
+          {needsPermissionPrompt && !permissionGranted && (
+            <Card>
+              <CardContent className="pt-6 space-y-4">
+                <p className="text-center text-sm text-muted-foreground">
+                  يتطلب iOS إذناً لاستخدام مستشعر الاتجاه. اضغط على الزر أدناه لتفعيل البوصلة.
+                </p>
+                <Button className="w-full" onClick={handlePermissionRequest}>
+                  تفعيل البوصلة
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+
+          {orientationError && (
+            <Card>
+              <CardContent className="pt-6">
+                <p className="text-center text-destructive text-sm">{orientationError}</p>
+              </CardContent>
+            </Card>
+          )}
+
           <Card className="bg-gradient-to-br from-purple-500/10 via-purple-400/5 to-pink-500/10 border-purple-400 border-0 shadow-lg">
             <CardContent className="pt-8 pb-8">
               <div className="flex flex-col items-center space-y-6">
-                {/* Compass Circle */}
                 <div className="relative w-72 h-72">
-                  {/* Background compass marks */}
                   <div className="absolute inset-0 rounded-full border-4 border-muted">
-                    {/* Cardinal directions */}
                     <div className="absolute top-2 left-1/2 -translate-x-1/2 text-xs font-bold text-muted-foreground">
                       N
                     </div>
@@ -167,9 +230,8 @@ export default function QiblaCompass() {
                     </div>
                   </div>
 
-                  {/* Rotating Qibla Indicator */}
                   <div
-                    className="absolute inset-0 flex items-center justify-center transition-transform duration-300 ease-out"
+                    className="absolute inset-0 flex items-center justify-center transition-transform duration-500 ease-out"
                     style={{ transform: `rotate(${compassRotation}deg)` }}
                   >
                     <div className="flex flex-col items-center">
@@ -178,7 +240,6 @@ export default function QiblaCompass() {
                     </div>
                   </div>
 
-                  {/* Center Kaaba indicator */}
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center">
                       <div className="w-6 h-6 bg-primary rounded-full" />
@@ -186,24 +247,35 @@ export default function QiblaCompass() {
                   </div>
                 </div>
 
-                {/* Direction Info */}
                 <div className="text-center space-y-2">
                   <p className="text-2xl font-arabic text-foreground">الكعبة المشرفة</p>
                   <p className="text-sm text-muted-foreground">Kaaba Direction</p>
                   {qiblaDirection !== null && (
-                    <p className="text-lg font-mono font-semibold text-primary">{Math.round(qiblaDirection)}°</p>
+                    <p className="text-lg font-mono font-semibold text-primary">
+                      {Math.round(qiblaDirection)}°
+                    </p>
+                  )}
+                  {accuracy !== null && (
+                    <p className="text-xs text-muted-foreground">
+                      دقة المستشعر ±{Math.round(accuracy)}°
+                    </p>
                   )}
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* Instructions */}
           <Card className="bg-muted/50">
-            <CardContent className="pt-6">
+            <CardContent className="pt-6 space-y-3">
+              {calibrationHint && (
+                <div className="flex items-center justify-center gap-2 text-amber-600 dark:text-amber-400 text-sm font-semibold">
+                  <CompassIcon className="w-4 h-4" />
+                  <span>حرّك هاتفك على شكل رقم ٨ لتحسين دقة البوصلة.</span>
+                </div>
+              )}
               <p className="text-sm text-muted-foreground text-center leading-relaxed">
-                Hold your device flat and rotate until the arrow points upward to find the Qibla direction. Make sure
-                location services and compass calibration are enabled.
+                ضع هاتفك بشكل مسطح ودوّره حتى يشير السهم إلى الأعلى لتحصل على اتجاه القبلة. تأكد من
+                تفعيل خدمات الموقع والمعايرة عند الحاجة.
               </p>
             </CardContent>
           </Card>

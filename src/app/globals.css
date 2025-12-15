@@ -134,6 +134,10 @@
   font-family: 'Amiri', 'Scheherazade New', serif;
 }
 
+.pb-safe {
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px));
+}
+
 /* RTL specific styles */
 [dir="rtl"] .text-right {
   text-align: left;

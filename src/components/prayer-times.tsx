@@ -185,7 +185,7 @@ export default function PrayerTimes() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-purple-100/30 to-pink-50 dark:from-slate-950 dark:via-purple-950/30 dark:to-slate-900 p-4 md:p-8 transition-colors duration-500">
+    <div className="min-h-[100dvh] bg-gradient-to-br from-purple-50 via-purple-100/30 to-pink-50 dark:from-slate-950 dark:via-purple-950/30 dark:to-slate-900 p-4 md:p-8 transition-colors duration-500">
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <div className="text-center space-y-2 mb-8">

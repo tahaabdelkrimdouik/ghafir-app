@@ -10,7 +10,7 @@ import { PrayerTime } from "@/helpers/usePrayerData";
  * This can be included in your main page or app component
  */
 export function NotificationSetup({ prayerTimes }: { prayerTimes: PrayerTime[] }) {
-  const { requestPermission, subscribeToPush, permission, isSupported } = usePushNotifications();
+  const { requestPermission, permission, isSupported } = usePushNotifications();
 
   useEffect(() => {
     // Automatically request permission and schedule notifications when prayer times are available
@@ -33,7 +33,7 @@ export function NotificationSetup({ prayerTimes }: { prayerTimes: PrayerTime[] }
           </p>
           <button
             onClick={requestPermission}
-            className="w-full bg-white text-indigo-600 font-arabic font-semibold py-2 px-4 rounded-lg hover:bg-indigo-50 transition-colors"
+            className="w-full bg-white text-indigo-600 font-arabic font-semibold py-2 px-4 rounded-lg hover:bg-indigo-50 transition-colors min-h-[44px]"
           >
             تفعيل الإشعارات
           </button>

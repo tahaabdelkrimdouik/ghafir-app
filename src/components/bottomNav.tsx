@@ -26,7 +26,7 @@ export default function BottomNav({ activeTab, setActiveTab }: BottomNavProps) {
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex flex-col items-center gap-1 transition-all duration-300 ${
+            className={`flex flex-col items-center gap-1 transition-all duration-300 min-h-[44px] px-3 py-2 ${
               activeTab === tab.id
                 ? "text-indigo-600 dark:text-indigo-400 scale-110"
                 : "text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"

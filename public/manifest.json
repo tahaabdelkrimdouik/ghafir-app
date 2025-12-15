@@ -7,14 +7,16 @@
     "theme_color": "#2563eb",
     "icons": [
       {
-        "src": "/icons/icon-192.png",
+        "src": "/Logos/logo-png-purple.png",
         "sizes": "192x192",
-        "type": "image/png"
+        "type": "image/png",
+        "purpose": "any maskable"
       },
       {
-        "src": "/icons/icon-512.png",
+        "src": "/Logos/logo-png-purple.png",
         "sizes": "512x512",
-        "type": "image/png"
+        "type": "image/png",
+        "purpose": "any maskable"
       }
     ],
     "shortcuts": [
@@ -25,9 +27,10 @@
         "url": "/?type=morning",
         "icons": [
           {
-            "src": "/icons/icon-192.png",
+            "src": "/Logos/logo-png-purple.png",
             "sizes": "192x192",
-            "type": "image/png"
+            "type": "image/png",
+            "purpose": "any maskable"
           }
         ]
       },
@@ -38,9 +41,10 @@
         "url": "/?qibla=true",
         "icons": [
           {
-            "src": "/icons/icon-192.png",
+            "src": "/Logos/logo-png-purple.png",
             "sizes": "192x192",
-            "type": "image/png"
+            "type": "image/png",
+            "purpose": "any maskable"
           }
         ]
       },
@@ -51,9 +55,10 @@
         "url": "/?mode=single",
         "icons": [
           {
-            "src": "/icons/icon-192.png",
+            "src": "/Logos/logo-png-purple.png",
             "sizes": "192x192",
-            "type": "image/png"
+            "type": "image/png",
+            "purpose": "any maskable"
           }
         ]
       },
@@ -64,9 +69,10 @@
         "url": "/?duaa=emergency",
         "icons": [
           {
-            "src": "/icons/icon-192.png",
+            "src": "/Logos/logo-png-purple.png",
             "sizes": "192x192",
-            "type": "image/png"
+            "type": "image/png",
+            "purpose": "any maskable"
           }
         ]
       }
