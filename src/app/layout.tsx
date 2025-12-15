@@ -19,6 +19,7 @@ export const metadata: Metadata = {
   manifest: "/manifest.json",
   icons: {
     icon: [
+      { url: "/favicon.ico", sizes: "any" },
       { url: "/Logos/logo-png-purple.png", type: "image/png" },
       { url: "/Logos/logo-png-white.png", type: "image/png", media: "(prefers-color-scheme: dark)" },
     ],
@@ -38,7 +39,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ar" dir="rtl" suppressHydrationWarning>
-      <head />
+      <head>
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="shortcut icon" href="/favicon.ico" />
+        <link rel="icon" href="/Logos/logo-png-purple.png" type="image/png" />
+        <link rel="apple-touch-icon" href="/Logos/logo-png-purple.png" sizes="180x180" />
+      </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <ThemeProvider>{children}</ThemeProvider>
       </body>
