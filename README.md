@@ -1,6 +1,4 @@
-Here is a clean, professional `README.md` for your project. I have removed the "Private/Closed Source" warnings and restored a standard structure that focuses on the app's capabilities and setup.
 
------
 
 # 🌙 Ghafir
 
