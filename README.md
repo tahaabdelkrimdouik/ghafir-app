@@ -1,91 +1,81 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+Here is a clean, professional `README.md` for your project. I have removed the "Private/Closed Source" warnings and restored a standard structure that focuses on the app's capabilities and setup.
 
-## Getting Started
+-----
 
-First, run the development server:
+# 🌙 Ghafir
+
+**Ghafir** is a modern, Islamic companion Progressive Web App (PWA). Designed with a focus on privacy and aesthetics, it provides accurate prayer times, interactive Dhikr sessions, and daily Quranic inspiration in a beautiful, offline-first interface.
+
+## ✨ Features
+
+  - **📍 Smart Prayer Times:** Automatically detects location to provide accurate times for Fajr, Dhuhr, Asr, Maghrib, and Isha.
+  - **📿 Interactive Dhikr:**
+      - **Session Mode:** Guided morning and evening Adhkar with step-by-step progress.
+      - **Haptic Feedback:** Vibrations on every count for a tactile experience.
+      - **Smart Saving:** Progress is saved locally, so you never lose your count.
+  - **📖 Daily Ayah:** Features a new Quranic verse every 24 hours to inspire daily reflection.
+  - **🧭 Qibla Compass:** High-precision direction finding using device gyroscope and magnetometer sensors.
+  - **📱 Native PWA Experience:**
+      - **Installable:** Add to home screen on iOS and Android.
+      - **Offline Ready:** Works seamlessly without an internet connection.
+      - **Instant Shortcuts:** Long-press the app icon to quickly access "Morning Dhikr" or "Qibla".
+
+## 🛠️ Tech Stack
+
+  - **Framework:** [Next.js 16](https://nextjs.org/) (App Router)
+  - **Styling:** [Tailwind CSS](https://tailwindcss.com/)
+  - **PWA:** `next-pwa` with Custom Service Workers
+  - **Database:** Supabase (Notifications & User Data)
+  - **Icons:** Lucide React
+  - **APIs:** Aladhan (Prayer Times), AlQuran Cloud (Daily Ayah)
+
+## 🚀 Getting Started
+
+Follow these steps to run the project locally on your machine.
+
+### 1\. Prerequisites
+
+  - Node.js 18.17 or later
+  - npm, yarn, or pnpm
+
+### 2\. Installation
+
+Clone the repository and install dependencies:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/your-username/ghafir-app.git
+cd ghafir-app
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 3\. Environment Setup
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## 🚀 Deployment
-
-### Quick Deploy to Vercel (Recommended)
-
-1. **Push your code to GitHub**
-   ```bash
-   git push origin main
-   ```
-
-2. **Go to [vercel.com](https://vercel.com)**
-   - Sign up/Login with GitHub
-   - Click "Add New Project"
-   - Import your repository
-
-3. **Add Environment Variables:**
-   - `NEXT_PUBLIC_SUPABASE_URL` - Your Supabase project URL
-   - `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Your Supabase anon key
-
-4. **Deploy!** Vercel will automatically build and deploy your app.
-
-### Detailed Deployment Guide
-
-See [DEPLOYMENT.md](./DEPLOYMENT.md) for complete deployment instructions, troubleshooting, and alternative platforms.
-
-### Environment Variables Required
-
-Create a `.env.local` file (or set in Vercel dashboard):
+Create a `.env.local` file in the root directory and add your Supabase credentials:
 
 ```bash
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
----
+### 4\. Run Development Server
 
-## 📱 PWA Features
+```bash
+npm run dev
+```
 
-This app is a Progressive Web App (PWA) with:
-- ✅ Offline support
-- ✅ Installable on mobile/desktop
-- ✅ Push notifications (ready for backend)
-- ✅ App shortcuts (long-press on icon)
-- ✅ Service worker caching
+Open [http://localhost:3000](https://www.google.com/search?q=http://localhost:3000) with your browser to see the result.
 
----
+## 📱 PWA Instructions
 
-## 🛠️ Tech Stack
+To test the PWA features (installability, offline mode) locally, you must run the build command:
 
-- **Framework:** Next.js 16
-- **Styling:** Tailwind CSS
-- **Database:** Supabase
-- **PWA:** next-pwa
-- **Icons:** Lucide React
-- **Language:** Arabic (RTL)
+```bash
+npm run build
+npm start
+```
 
----
+Then open `localhost:3000`. In Chrome DevTools, you can simulate "Offline" mode in the Network tab to test caching.
 
 ## 📄 License
 
-This project is private.
+© 2025 douik taha abdelkrim. All Rights Reserved.
