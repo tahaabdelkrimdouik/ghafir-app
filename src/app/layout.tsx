@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import OneSignalInit from "@/components/OneSignalInit";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -46,6 +47,7 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/Logos/logo-png-purple.png" sizes="180x180" />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <OneSignalInit />
         <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>

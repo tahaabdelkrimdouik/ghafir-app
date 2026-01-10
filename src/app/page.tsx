@@ -7,8 +7,6 @@ import Navbar from "@/components/Navbar";
 import CreativeHome from "@/components/creativeHome";
 import BottomNav, { TabType } from "@/components/bottomNav";
 import RandomAyahCard from "@/components/RandomAyahCard";
-import { NotificationSetup } from "@/components/NotificationSetup";
-import { usePrayerData } from "@/helpers/usePrayerData"; // The hook we created
 import OnboardingModal from "@/components/OnboardingModal";
 import { useNotificationScheduler } from "@/hooks/useNotificationScheduler";
 
@@ -38,8 +36,6 @@ function PageContent() {
     }
   }, [searchParams, router]);
 
-  // 2. Data Logic (Abstracted away!)
-  const { prayerTimes } = usePrayerData();
 
   return (
     <div className="min-h-[100dvh] flex flex-col bg-background dark:bg-black transition-colors duration-500">
@@ -55,7 +51,7 @@ function PageContent() {
           <div className="animate-in fade-in duration-500">
             {/* Negative margin to pull Hero up behind the Navbar transparency if desired, or standard flow */}
             <div className="-mt-24 mb-6">
-              <CreativeHome prayerTimes={prayerTimes} />
+              <CreativeHome />
             </div>
 
             <div className="max-w-4xl mx-auto px-4 space-y-6">
@@ -69,9 +65,6 @@ function PageContent() {
 
       {/* Bottom Navigation */}
       <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} />
-      
-      {/* Notification Setup */}
-      <NotificationSetup prayerTimes={prayerTimes} />
     </div>
   );
 }

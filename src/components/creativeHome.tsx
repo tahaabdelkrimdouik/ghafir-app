@@ -4,11 +4,21 @@
 import { useState, useEffect } from "react";
 import { formatCountdown } from "@/helpers/utils";
 import { arabicTranslations } from "@/helpers/translation";
-import { PrayerTime } from "@/helpers/usePrayerData"; // Import type from hook
+import { usePushNotifications } from "@/hooks/usePushNotifications";
+import { schedulePrayerNotifications } from "@/helpers/notifications";
 
-export default function CreativeHome({ prayerTimes }: { prayerTimes: PrayerTime[] }) {
+type PrayerTime = {
+  name: string;
+  time: string;
+  arabicName: string;
+};
+
+export default function CreativeHome() {
   const [timeOfDay, setTimeOfDay] = useState(arabicTranslations.evening);
   const [nextPrayer, setNextPrayer] = useState<{ name: string; timeLeft: string } | null>(null);
+  const [prayerTimes, setPrayerTimes] = useState<PrayerTime[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { permission } = usePushNotifications();
 
   // Time of Day Greeting
   useEffect(() => {
@@ -18,10 +28,74 @@ export default function CreativeHome({ prayerTimes }: { prayerTimes: PrayerTime[
     else setTimeOfDay(arabicTranslations.goodEvening);
   }, []);
 
+  // Fetch Prayer Times
+  useEffect(() => {
+    const fetchPrayerTimes = async () => {
+      if (typeof window === 'undefined' || !navigator.geolocation) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        navigator.geolocation.getCurrentPosition(
+          async (pos) => {
+            const { latitude, longitude } = pos.coords;
+            try {
+              // Get Prayer Times
+              const date = new Date();
+              const timeRes = await fetch(
+                `https://api.aladhan.com/v1/timings/${date.getDate()}-${
+                  date.getMonth() + 1
+                }-${date.getFullYear()}?latitude=${latitude}&longitude=${longitude}&method=2`
+              );
+              const timeData = await timeRes.json();
+
+              if (timeData.data?.timings) {
+                const t = timeData.data.timings;
+                setPrayerTimes([
+                  { name: "Fajr", time: t.Fajr, arabicName: "الفجر" },
+                  { name: "Dhuhr", time: t.Dhuhr, arabicName: "الظهر" },
+                  { name: "Asr", time: t.Asr, arabicName: "العصر" },
+                  { name: "Maghrib", time: t.Maghrib, arabicName: "المغرب" },
+                  { name: "Isha", time: t.Isha, arabicName: "العشاء" },
+                ]);
+              }
+            } catch (e) {
+              console.error("Error fetching prayer data", e);
+            } finally {
+              setLoading(false);
+            }
+          },
+          (error) => {
+            console.error("Geolocation error:", error);
+            setLoading(false);
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0
+          }
+        );
+      } catch (err) {
+        console.error("Error requesting location:", err);
+        setLoading(false);
+      }
+    };
+
+    fetchPrayerTimes();
+  }, []);
+
+  // Notification Setup
+  useEffect(() => {
+    if (prayerTimes.length > 0 && permission === "granted") {
+      schedulePrayerNotifications(prayerTimes);
+    }
+  }, [prayerTimes, permission]);
+
   // Countdown Logic
   useEffect(() => {
     const timer = setInterval(() => {
-      if (prayerTimes.length > 0) {
+      if (prayerTimes.length > 0 && !loading) {
         const now = new Date();
         let upcoming = null;
         let targetDate = null;
@@ -56,7 +130,7 @@ export default function CreativeHome({ prayerTimes }: { prayerTimes: PrayerTime[
       }
     }, 1000);
     return () => clearInterval(timer);
-  }, [prayerTimes]);
+  }, [prayerTimes, loading]);
 
   return (
     <div className="h-full w-full bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-black transition-colors duration-500">
