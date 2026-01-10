@@ -9,16 +9,7 @@ git commit -m "Ready for deployment"
 git push origin main
 ```
 
-## Step 2: Get Your Supabase Keys (1 min)
-
-1. Go to [app.supabase.com](https://app.supabase.com)
-2. Select your project
-3. Go to **Settings** → **API**
-4. Copy:
-   - **Project URL** → This is your `NEXT_PUBLIC_SUPABASE_URL`
-   - **anon public** key → This is your `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-
-## Step 3: Deploy to Vercel (2 min)
+## Step 2: Deploy to Vercel (3 min)
 
 1. **Go to [vercel.com](https://vercel.com)**
    - Sign up/Login (use GitHub for easiest setup)
@@ -27,17 +18,7 @@ git push origin main
    - Import your `ghafir-app-front` repository
    - Vercel auto-detects Next.js ✅
 
-3. **Add Environment Variables:**
-   - Click "Environment Variables"
-   - Add:
-     ```
-     NEXT_PUBLIC_SUPABASE_URL = [paste your Supabase URL]
-     NEXT_PUBLIC_SUPABASE_ANON_KEY = [paste your anon key]
-     ```
-   - Select all environments (Production, Preview, Development)
-   - Click "Save"
-
-4. **Click "Deploy"**
+3. **Click "Deploy"**
    - Wait 2-3 minutes
    - Your app is live! 🎉
 

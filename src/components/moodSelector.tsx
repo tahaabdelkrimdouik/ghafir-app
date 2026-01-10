@@ -1,6 +1,5 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { supabase } from "@/lib/supabaseClient"
 import { Loader2 } from "lucide-react"
 import { arabicTranslations } from "@/helpers/translation"
 
@@ -29,19 +28,29 @@ export function MoodSelector({
     setLoading(true)
 
     try {
-      const { data, error } = await supabase
-        .from("dhikr")
-        .select("*")
-        .eq("category", mood)
-
-      if (error) {
-        console.error("Supabase error:", error)
+      // Load the appropriate azkar file for the selected mood
+      const response = await fetch(`/azkar/${mood}.json`)
+      if (!response.ok) {
+        console.error(`Failed to load ${mood}.json:`, response.statusText)
         onAzkarLoaded([]) // Send empty array on error
         return
       }
 
+      const jsonData = await response.json()
+
+      // Convert JSON structure to the expected format
+      const azkarList = jsonData.content.map((item: any, index: number) => ({
+        id: `${mood}_${index}`,
+        title: jsonData.title,
+        arabic_text: item.zekr,
+        translation: undefined, // Not available in JSON
+        count: item.repeat,
+        bless: item.bless,
+        category: mood
+      }))
+
       // Send the list back to parent component
-      onAzkarLoaded(data || [])
+      onAzkarLoaded(azkarList)
     } catch (error) {
       console.error("Error fetching azkar:", error)
       onAzkarLoaded([]) // Send empty array on error

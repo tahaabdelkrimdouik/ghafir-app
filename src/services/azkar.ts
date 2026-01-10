@@ -1,9 +1,7 @@
-import { supabase } from '../lib/supabaseClient';
-
-// 1. Define the shape of a single row from the DB
+// 1. Define the shape of a single row from the JSON files
 export interface DhikrRow {
   id: string;
-  category: 'morning' | 'afternoon' | 'after_praying' | 'common' | 'night';
+  category: 'morning' | 'afternoon' | 'after_praying' | 'anxiety' | 'grateful' | 'sad' | 'common' | 'night';
   text: string;         // The main Arabic text
   count: number;        // The target repeat count
   title?: string;       // Optional title
@@ -17,33 +15,51 @@ export interface GroupedAzkar {
   [category: string]: DhikrRow[];
 }
 
-// 3. The Function to Fetch and Group
+// 3. The Function to Fetch and Group from JSON files
 export async function getAllAzkarGrouped(): Promise<GroupedAzkar> {
-  // A. Fetch all rows from Supabase
-  const { data, error } = await supabase
-    .from('dhikr')
-    .select('*')
-    .order('id', { ascending: true }); // Keeps them in consistent order
+  const groupedData: GroupedAzkar = {};
 
-  if (error) {
-    console.error('Error fetching all azkar:', error);
+  // List of azkar files to load
+  const azkarFiles = [
+    'morning',
+    'afternoon',
+    'after-prayer',
+    'anxiety',
+    'grateful',
+    'sad'
+  ];
+
+  try {
+    for (const fileName of azkarFiles) {
+      const response = await fetch(`/azkar/${fileName}.json`);
+      if (!response.ok) {
+        console.error(`Failed to load ${fileName}.json:`, response.statusText);
+        continue;
+      }
+
+      const jsonData = await response.json();
+      const category = fileName === 'after-prayer' ? 'after_praying' : fileName;
+
+      if (!groupedData[category]) {
+        groupedData[category] = [];
+      }
+
+      // Convert JSON structure to DhikrRow format
+      jsonData.content.forEach((item: any, index: number) => {
+        groupedData[category].push({
+          id: `${category}_${index}`,
+          category: category as DhikrRow['category'],
+          text: item.zekr,
+          count: item.repeat,
+          title: jsonData.title,
+          bless: item.bless || undefined,
+        });
+      });
+    }
+  } catch (error) {
+    console.error('Error loading azkar data:', error);
     return {};
   }
-
-  if (!data) return {};
-
-  // B. Group them by category using .reduce()
-  const groupedData = data.reduce((acc: GroupedAzkar, item: DhikrRow) => {
-    // If this category doesn't exist in our object yet, create an empty array
-    if (!acc[item.category]) {
-      acc[item.category] = [];
-    }
-    
-    // Push the item into the correct category array
-    acc[item.category].push(item);
-    
-    return acc;
-  }, {});
 
   return groupedData;
 }

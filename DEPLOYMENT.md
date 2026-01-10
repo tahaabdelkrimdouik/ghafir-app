@@ -14,21 +14,7 @@
 
 ## 📋 Pre-Deployment Checklist
 
-### 1. Environment Variables Required
-
-Your app needs these environment variables:
-
-```bash
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-```
-
-**Optional (for scripts):**
-```bash
-NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
-```
-
-### 2. Build Test
+### 1. Build Test
 
 Test your build locally before deploying:
 
@@ -66,15 +52,7 @@ If the build succeeds, you're ready to deploy!
    - **Build Command:** `npm run build` (default)
    - **Output Directory:** `.next` (default)
 
-5. **Add Environment Variables**
-   - Click "Environment Variables"
-   - Add:
-     - `NEXT_PUBLIC_SUPABASE_URL` = `your_supabase_url`
-     - `NEXT_PUBLIC_SUPABASE_ANON_KEY` = `your_supabase_anon_key`
-   - Select "Production", "Preview", and "Development"
-   - Click "Save"
-
-6. **Deploy!**
+5. **Deploy!**
    - Click "Deploy"
    - Wait 2-3 minutes
    - Your app will be live at `your-app.vercel.app`
